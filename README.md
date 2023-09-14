@@ -9,58 +9,54 @@ Các bước tiến hành:
 Đầu tiên, các bạn cần phải bỏ DVD cài đặt vào ổ CD/DVD của máy chủ. Sau đó hãy thực hiện lệnh sau để mount DVD vào thư mục /mnt/cdrom
 # mkdir /mnt/cdrom
 # mount /dev/cdrom /mnt/cdrom
+
 Thư mục Package là thư mục lưu trữ các gói phần mềm có trong đĩa cài đặt Linux.
 # cd /mnt/cdrom
-# ls -l
-total 1565
-drwxr-xr-x 4 root root   2048 May 28 23:26 addons
-drwxr-xr-x 3 root root   2048 May 28 23:59 EFI
--rw-r--r-- 1 root root   8806 May 28 23:26 EULA
--rw-r--r-- 1 root root  18390 May 28 23:26 GPL
-drwxr-xr-x 3 root root   2048 May 29 00:00 images
-drwxr-xr-x 2 root root   2048 May 28 23:59 isolinux
-drwxr-xr-x 2 root root   2048 May 28 23:59 LiveOS
-drwxrwxr-x 3 root 1039 851968 May 28 23:27 Packages
--rw-r--r-- 1 root root 180576 May 28 23:26 RELEASE-NOTES-U9-en
--rw-r--r-- 1 root root 521292 May 28 23:26 RELEASE-NOTES-U9-en.html
-drwxr-xr-x 2 root root   4096 May 28 23:27 repodata
--rw-r--r-- 1 root root   1011 May 28 23:26 RPM-GPG-KEY
--rw-r--r-- 1 root root   1011 May 28 23:26 RPM-GPG-KEY-oracle
--r--r--r-- 1 root root   3322 May 29 00:00 TRANS.TBL
+
 Copy toàn bộ thư mục này sang 1 phân vùng khác.
 # cp -R /mnt/cdrom/Packages /u02/
+
 2. Bước 2: Cài đặt gói createrepo
 Vào thư mục Packages và cài đặt gói createrepo (phiên bản tùy thuộc vào đĩa DVD bạn đang có)
 # cd /u02/Packages
 # rpm -Uvh createrepo-0.9.9-28.el7.noarch.rpm
-Preparing...                          ################################# [100%]
-        package createrepo-0.9.9-28.el7.noarch is already installed
-(Như trong trường hợp này, gói createrepo đã được cài đặt)
+
 3. Bước 3: Tạo Repository cho Yum
 Sử dụng câu lệnh createrepo để tạo ra Reposity cho yum từ thư mục /mnt/cdrom/Packages
+
 # createrepo -v /u02/Packages
+
 Spawning worker 0 with 5210 pkgs
 Worker 0: reading 389-ds-base-1.3.10.2-6.el7.x86_64.rpm
 Worker 0: reading 389-ds-base-libs-1.3.10.2-6.el7.x86_64.rpm
-Worker 0: reading ElectricFence-2.2.2-39.el7.i686.rpm
-Worker 0: reading ElectricFence-2.2.2-39.el7.x86_64.rpm
-Worker 0: reading GConf2-3.2.6-8.el7.i686.rpm
-Worker 0: reading GConf2-3.2.6-8.el7.x86_64.rpm
 .........
 
 Tiếp theo, di chuyển vào thư mục /etc/yum.repos.d/
+
 # cd /etc/yum.repos.d/
+
 Và tạo 1 file có tên localrepo.repo có nội dung như sau
+
 vi /etc/yum.repos.d/localrepo.repo
+
 [localrepo]
+
 name=Linux DVD
+
 baseurl=file:///u02/Packages
+
 gpgcheck=0
+
 enabled=1
+
 Trong đó, baseurl là đường dẫn đến thư mục chứa các gói Packages
+
 4. Bước 4: Xác nhận lại Local Repository
+
 Xóa cache của yum
+
 # yum clean all
+
 Loaded plugins: langpacks, ulninfo
 Cleaning repos: cassandra localrepo ol7_UEKR6 ol7_developer_EPEL ol7_latest pgdg-common pgdg10 pgdg11 pgdg12 pgdg13 pgdg96 pgpool42
 
@@ -76,6 +72,7 @@ Vậy là đã cấu hình thành công
 
  
 [wp-svg-icons icon=”point-right” wrap=”i”] 
+
 5. Bước 5: Kiểm thử
 Để thử nghiệm, tắt mạng Internet đi, sau đó gõ lệnh yum
 # yum install telnet
@@ -173,47 +170,69 @@ rpm -qi telnet
 1. Tải một file đơn giản
 Lệnh này sẽ download một file từ Internet về máy và lưu trữ nó trong thư mục hiện tại (nếu muốn biết bạn đang ở thư mục nào sử dụng lệnh pwd).
 Khi được tải về trên terminal sẽ hiển thị các thông tin như quá trình tải về, kích thước file, ngày giờ tải về trong khi tải cho chúng ta.
-1# wget http://ftp.gnu.org/gnu/wget/wget-1.5.3.tar.gz2. Tải file với một tên khác
+1
+# wget http://ftp.gnu.org/gnu/wget/wget-1.5.3.tar.gz
+2. Tải file với một tên khác
 Sử dụng -O (viết hoa) để tải file với tên file mà bạn muốn lưu.
-1# wget -O wget.zip http://ftp.gnu.org/gnu/wget/wget-1.5.3.tar.gzNhư ở trên thì ta sẽ có được một file tải về có tên là wget.zip
+1
+# wget -O wget.zip http://ftp.gnu.org/gnu/wget/wget-1.5.3.tar.gz
+Như ở trên thì ta sẽ có được một file tải về có tên là wget.zip
 3. Tải nhiều file với giao thức HTTP và FTP
 Chúng ta sẽ xem cách tải nhiều file sử dụng giao thức HTTP và FTP với một lệnh wget được thực hiện như thế nào nhé.
-1# wget http://ftp.gnu.org/gnu/wget/wget-1.5.3.tar.gz ftp://ftp.gnu.org/gnu/wget/wget-1.10.1.tar.gz.sig4. Đọc địa chỉ URL từ một file có sẵn
+1
+# wget http://ftp.gnu.org/gnu/wget/wget-1.5.3.tar.gz ftp://ftp.gnu.org/gnu/wget/wget-1.10.1.tar.gz.sig
+4. Đọc địa chỉ URL từ một file có sẵn
 Bạn có thể lưu trữ một địa chỉ URL trong một file và sau đó download nó sử dụng lựa chọn là -i.
 Bên dưới mình đã tạo một file tmp.txt trong thư mục wget, nơi mà ta sẽ lưu trữ địa chỉ URL để tải về.
-1# wget -i /wget/tmp.txt5.Tiếp tục tải về khi chưa hoàn tất
+1
+# wget -i /wget/tmp.txt
+5.Tiếp tục tải về khi chưa hoàn tất
 Khi bạn đang tải một file có kích thước lớn nhưng không may có sự cố xảy ra thì nó sẽ dừng việc tải xuống. Trong trường này nếu bạn muốn tiếp tục tải phần còn lại của file đó thì chúng ta sử dụng tùy chọn -c.
 Nhưng nếu bạn tải một file mà không có -c thì wget sẽ thêm .1 vào phần mở rộng ở cuối file, và xem đó như một bản tải xuống mới. Vì vậy, cách tốt nhất là thêm -c vào khi bạn muốn tải một file có kích thước lớn.
-1# wget -c http://centos-hcm.viettelidc.com.vn/7.9.2009/isos/x86_64/CentOS-7-x86_64-DVD-2009.iso6. Tải file với việc nối .1 vào tên file
+1
+# wget -c http://centos-hcm.viettelidc.com.vn/7.9.2009/isos/x86_64/CentOS-7-x86_64-DVD-2009.iso
+6. Tải file với việc nối .1 vào tên file
 Khi bạn bắt đầu tải xuống mà không có lựa chọn -c thì lệnh wget sẽ thêm .1 vào cuối file và bắt đầu với việc tải một file mới. Nếu file .1 đã tồn tại thì file .2 sẽ được nối vào cuối của file.
-1# wget http://centos-hcm.viettelidc.com.vn/7.9.2009/isos/x86_64/CentOS-7-x86_64-DVD-2009.isoChúng ta thấy .1 đã được nối vào cuối của file.
+1
+# wget http://centos-hcm.viettelidc.com.vn/7.9.2009/isos/x86_64/CentOS-7-x86_64-DVD-2009.iso
+Chúng ta thấy .1 đã được nối vào cuối của file.
 1
 2
 3
-4# ls -l CentOS*
+4
+# ls -l CentOS*
  
 -rw-r--r--. 1 root root 3877262 Oct 2 12:47 CentOS-7-x86_64-DVD-2009.iso
--rw-r--r--. 1 root root 181004 Oct 2 12:50 CentOS-7-x86_64-DVD-2009.iso.17. Tải file trong background
+-rw-r--r--. 1 root root 181004 Oct 2 12:50 CentOS-7-x86_64-DVD-2009.iso.1
+7. Tải file trong background
 Chúng tôi sẽ nói sơ qua background là gì để bạn hiểu, khi bạn thực hiện một hành động hay còn gọi một tiến trình trong linux thì bạn có 2 cách để chạy nó, đó là background process và foreground process.
 Lợi thế của việc chạy một tiến trình trong background là bạn có thể chạy có lệnh khác mà không phải đợi tới khi nó kết thúc mới bắt đầu một tiến trình mới.
 Trong lệnh wget chúng ta muốn tải một file trong background thì sử dụng lựa chọn -b, sau khi tải xong nó sẽ ngay lập tức được ghi vào trong file /wget/log.txt.
 1
 2
-3# wget -b /wget/log.txt http://centos-hcm.viettelidc.com.vn/7.9.2009/isos/x86_64/CentOS-7-x86_64-DVD-2009.iso
+3
+# wget -b /wget/log.txt http://centos-hcm.viettelidc.com.vn/7.9.2009/isos/x86_64/CentOS-7-x86_64-DVD-2009.iso
  
-Continuing in background, pid 3550.8. Hạn chế giới hạn tốc độ tải xuống
+Continuing in background, pid 3550.
+8. Hạn chế giới hạn tốc độ tải xuống
 Với lựa chọn là -limit-race=100k, giới hạn tốc độ tải xuống là 100k và nó sẽ được lưu vào file /wget/log.txt như hình bên dưới.
-1# wget -c --limit-rate=100k /wget/log.txt http://centos-hcm.viettelidc.com.vn/7.9.2009/isos/x86_64/CentOS-7-x86_64-DVD-2009.iso9. Hạn chế download FTP và HTTP với username và password
+1
+# wget -c --limit-rate=100k /wget/log.txt http://centos-hcm.viettelidc.com.vn/7.9.2009/isos/x86_64/CentOS-7-x86_64-DVD-2009.iso
+9. Hạn chế download FTP và HTTP với username và password
 Với lựa chọn -http-user=username, -http-password=password, và -ftp-user=username, -ftp-password=password, bạn có thể tải xuống các website bị hạn chế mật khẩu như hình bên dưới.
-1# wget --http-user=tenten --http-password=password http://centos-hcm.viettelidc.com.vn/7.9.2009/isos/x86_64/CentOS-7-x86_64-DVD-2009.iso10. Kiểm tra phiên bản hiện tại của Wget và lệnh Help
+1
+# wget --http-user=tenten --http-password=password http://centos-hcm.viettelidc.com.vn/7.9.2009/isos/x86_64/CentOS-7-x86_64-DVD-2009.iso
+10. Kiểm tra phiên bản hiện tại của Wget và lệnh Help
 Với lựa chọn là -version, bạn có thể xem phiên bản hiện tại của wget và -help nếu bạn cần được giúp đỡ thêm về lệnh wget.
 1
 2
 3
-4# wget --version
+4
+# wget --version
  
  
-# wget --help
+# wget --help
+
 
 ## Sử dụng LVM
 
